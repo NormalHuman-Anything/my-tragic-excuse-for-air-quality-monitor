@@ -1,31 +1,32 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include <EduIntro.h>
+#include "DHT.h"
 
-
-DHT11 dht11(13);
-
+#define DHTPIN 13
+#define DHTTYPE DHT11
 unsigned long delayTime;
 
 const char* ssid = "123456";
 const char* password = "ppap1542xd";
 
 ESP8266WebServer server(80);
-
+DHT dht(DHTPIN, DHTTYPE);
 String GenerateMetrics() {
   String message = "";
   message += "# HELP dht11_measuring_temperature Current sensor temperature in celsius.\n";
   message += "# TYPE dht11_measuring_temperature gauge\n";
   message += "dht11_measuring_temperature ";
-  message += dht11.readCelsius();
+  message += dht.readTemperature();
   message += "\n";
 
   message += "# HELP dht11_measuring_humidity Current sensor humidity in persent.\n";
   message += "# TYPE dht11_measuring_humidity gauge\n";
   message += "dht11_measuring_humidity ";
-  message += dht11.readHumidity();
+  message += dht.readHumidity();
   message += "\n";
 
+  message += "dht11_measuring_HeatIndex ";
+  message += dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false);
   
 
   return message;
@@ -33,7 +34,6 @@ String GenerateMetrics() {
 
 
 void HandleRoot() {
-  dht11.update();
   server.send(200, "text/plain", GenerateMetrics() );
 }
 void HandleNotFound() {
@@ -45,6 +45,7 @@ void HandleNotFound() {
 
 void setup() {
     Serial.begin(115200);
+    dht.begin();
     while(!Serial);  
 
 // BME280
@@ -91,9 +92,8 @@ void loop() {
 
 
 void printValues() {
-    dht11.update();
     Serial.print("Temperature = ");
-    Serial.print(dht11.readCelsius());
+    Serial.print(dht.readTemperature());
     Serial.println(" *C");
 
     //Serial.print("Pressure = ");
@@ -106,7 +106,7 @@ void printValues() {
     //Serial.println(" m");
 
     Serial.print("Humidity = ");
-    Serial.print(dht11.readHumidity());
+    Serial.print(dht.readHumidity());
     Serial.println(" %");
 
     Serial.println();
