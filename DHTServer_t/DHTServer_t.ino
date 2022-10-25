@@ -1,15 +1,25 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <SoftwareSerial.h>
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include "Adafruit_PM25AQI.h"
 #include "s8_uart.h"
-#include <Arduino.h>
 #include "modbus_crc.h"
 #include "utils.h"
 #include "DHT.h"
-#include <SoftwareSerial.h>
 
-#define DHTPIN 13
+
+#define DHTPIN 15
 #define DHTTYPE DHT11
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3D ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+
+
 unsigned long delayTime;
 
 PM25_AQI_Data data;
@@ -18,10 +28,10 @@ int led = 2;
 
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
 
-SoftwareSerial pmSerial(12, 14);
+SoftwareSerial pmSerial(13, 12);
 
-#define S8_RX_PIN 4         // Rx pin which the S8 Tx pin is attached to (change if it is needed)
-#define S8_TX_PIN 5         // Tx pin which the S8 Rx pin is attached to (change if it is needed)
+#define S8_RX_PIN 14         // Rx pin which the S8 Tx pin is attached to (change if it is needed)
+#define S8_TX_PIN 16         // Tx pin which the S8 Rx pin is attached to (change if it is needed)
 
 SoftwareSerial S8_serial(S8_RX_PIN, S8_TX_PIN);
 
@@ -37,7 +47,7 @@ DHT dht(DHTPIN, DHTTYPE);
   
 
 String GenerateMetrics() {
-  digitalWrite(led, HIGH);
+  digitalWrite(led, LOW);
   String message = "";
   message += "# HELP dht11_measuring_temperature Current sensor temperature in celsius.\n";
   message += "# TYPE dht11_measuring_temperature gauge\n";
@@ -103,7 +113,7 @@ String GenerateMetrics() {
   
   message += sensor.co2 = sensor_S8->get_co2();
 
-  digitalWrite(led, LOW);
+  digitalWrite(led, HIGH);
   return message;
 }
 
@@ -124,7 +134,11 @@ void setup() {
     dht.begin();
     while(!Serial);  
 
-// BME280    Serial.println(F("dht11 test"));
+   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
 
   S8_serial.begin(S8_BAUDRATE);
   sensor_S8 = new S8_UART(S8_serial);
