@@ -14,8 +14,11 @@ unsigned long delayTime;
 
 PM25_AQI_Data data;
 
-//SoftwareSerial pmSerial(12, 14);
+int led = 2;
+
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
+
+SoftwareSerial pmSerial(12, 14);
 
 #define S8_RX_PIN 4         // Rx pin which the S8 Tx pin is attached to (change if it is needed)
 #define S8_TX_PIN 5         // Tx pin which the S8 Rx pin is attached to (change if it is needed)
@@ -34,6 +37,7 @@ DHT dht(DHTPIN, DHTTYPE);
   
 
 String GenerateMetrics() {
+  digitalWrite(led, HIGH);
   String message = "";
   message += "# HELP dht11_measuring_temperature Current sensor temperature in celsius.\n";
   message += "# TYPE dht11_measuring_temperature gauge\n";
@@ -99,6 +103,7 @@ String GenerateMetrics() {
   
   message += sensor.co2 = sensor_S8->get_co2();
 
+  digitalWrite(led, LOW);
   return message;
 }
 
