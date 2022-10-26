@@ -52,7 +52,6 @@ DHT dht(DHTPIN, DHTTYPE);
   
 
 String GenerateMetrics() {
-  digitalWrite(led, LOW);
   sht.readSample();
   String message = "";
   message += "# HELP dht11_measuring_temperature Current sensor temperature in celsius.\n";
@@ -72,89 +71,105 @@ String GenerateMetrics() {
   message += "\n";
   
   
-  message += "SHT!";
+  message += "# SHT";
   message += "\n";
-  message += "SHT Temperature : ";
+  message += "# SHT Temperature : ";
   message += "\n";
+  
+  message += "sht30_getTemperature ";
   message += sht.getTemperature();
   message += "\n";
-  message += "SHT Humidity : ";
+  message += "# SHT Humidity : ";
   message += "\n";
+  message += "sht30_getHumidity ";
   message += sht.getHumidity();
   message += "\n";
 
-  message += "STANDARD concentration units:";
+  message += "# STANDARD concentration units:";
   message += "\n";
-  message += "PM 1.0";
+  message += "# PM 1.0 ";
   message += "\n";
+  message += "data_PM10_std ";
   message += data.pm10_standard;
   message += "\n";
-  message += "PM2.5";
+  message += "# PM2.5 ";
   message += "\n";
+  message += "data_PM25_std ";
   message += data.pm25_standard;
   message += "\n";
-  message += "PM10";
+  message += "# PM10 ";
   message += "\n";
+  message += "data_PM100_std ";
   message += data.pm100_standard;
   message += "\n";
 
-  message += "environmental concentration units:";
+  message += "# environmental concentration units:";
   message += "\n";
 
-  message += "PM1.0";
+  message += "# PM1.0 ";
   message += "\n";
+  message += "data_PM10_env ";
   message += data.pm10_env;
   message += "\n";
 
-  message += "PM2.5";
+  message += "# PM2.5 ";
   message += "\n";
+  message += "data_PM25_env ";
   message += data.pm25_env;
   message += "\n";
 
-  message += "PM10";
+  message += "# PM10 ";
   message += "\n";
+  message += "data_PM100_env ";
   message += data.pm100_env;
   message += "\n";
 
-  message += "particles > (size) / 0.1L air : ";
+  message += "# particles > (size) / 0.1L air : ";
   message += "\n";
-  message += "0.3um";
+  message += "# 0.3um ";
   message += "\n";
+  message += "data_Part03 ";
   message += data.particles_03um;
   message += "\n";
 
-  message += "0.5um";
+  message += "# 0.5um ";
   message += "\n";
+  message += "data_Part05 ";
   message += data.particles_05um;
   message += "\n";
 
-  message += "1.0um";
+  message += "# 1.0um ";
   message += "\n";
+  message += "data_Part10 ";
   message += data.particles_10um;
   message += "\n";
 
-  message += "2.5um";
+  message += "# 2.5um ";
   message += "\n";
+  message += "data_Part25 ";
   message += data.particles_25um;
   message += "\n";
 
-  message += "5.0um";
+  message += "# 5.0um ";
   message += "\n";
+  message += "data_Part50 ";
   message += data.particles_50um;
   message += "\n";
 
-  message += "10um";
+  message += "# 10um ";
   message += "\n";
+  message += "data_Part100 ";
   message += data.particles_100um;
   message += "\n";
 
 
-  message += "SenseAir S8 CO2 : (ppm)";
+  message += "# SenseAir S8 CO2 : (ppm)";
   message += "\n";
-  
+
+  message += "senseair_s8_get_co2 ";
   message += sensor.co2 = sensor_S8->get_co2();
 
-  digitalWrite(led, HIGH);
+
   return message;
 }
 
