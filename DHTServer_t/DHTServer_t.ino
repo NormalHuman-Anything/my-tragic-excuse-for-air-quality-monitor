@@ -13,7 +13,7 @@
 #include "DHT.h"
 
 
-#define DHTPIN 15
+#define DHTPIN 0
 #define DHTTYPE DHT11
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -69,62 +69,88 @@ String GenerateMetrics() {
 
   message += "dht11_measuring_HeatIndex ";
   message += dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false);
+  message += "\n";
   
   
   message += "SHT!";
-
+  message += "\n";
   message += "SHT Temperature : ";
+  message += "\n";
   message += sht.getTemperature();
-
+  message += "\n";
   message += "SHT Humidity : ";
+  message += "\n";
   message += sht.getHumidity();
-
+  message += "\n";
 
   message += "STANDARD concentration units:";
-
+  message += "\n";
   message += "PM 1.0";
+  message += "\n";
   message += data.pm10_standard;
-
+  message += "\n";
   message += "PM2.5";
+  message += "\n";
   message += data.pm25_standard;
-
+  message += "\n";
   message += "PM10";
+  message += "\n";
   message += data.pm100_standard;
-
-
+  message += "\n";
 
   message += "environmental concentration units:";
+  message += "\n";
 
   message += "PM1.0";
+  message += "\n";
   message += data.pm10_env;
+  message += "\n";
 
   message += "PM2.5";
+  message += "\n";
   message += data.pm25_env;
+  message += "\n";
 
   message += "PM10";
+  message += "\n";
   message += data.pm100_env;
+  message += "\n";
 
   message += "particles > (size) / 0.1L air : ";
+  message += "\n";
   message += "0.3um";
+  message += "\n";
   message += data.particles_03um;
+  message += "\n";
 
   message += "0.5um";
+  message += "\n";
   message += data.particles_05um;
+  message += "\n";
 
   message += "1.0um";
+  message += "\n";
   message += data.particles_10um;
+  message += "\n";
 
   message += "2.5um";
+  message += "\n";
   message += data.particles_25um;
+  message += "\n";
 
   message += "5.0um";
+  message += "\n";
   message += data.particles_50um;
+  message += "\n";
 
   message += "10um";
+  message += "\n";
   message += data.particles_100um;
+  message += "\n";
 
 
   message += "SenseAir S8 CO2 : (ppm)";
+  message += "\n";
   
   message += sensor.co2 = sensor_S8->get_co2();
 
@@ -147,12 +173,13 @@ void setup() {
   
     Serial.begin(115200);
     dht.begin();
-    while(!Serial); 
+    //while(!Serial); 
     Wire.begin(); 
 
    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
+    //for(;;); // Don't proceed, loop forever
+    
   }
     if (sht.init()) {
       Serial.print("init(): success\n");
@@ -168,14 +195,14 @@ void setup() {
   int len = strlen(sensor.firm_version);
   if (len == 0) {
       Serial.println("SenseAir S8 CO2 sensor not found!");
-      while (1) { delay(1); };
+      //while (1) { delay(1); };
   }
 
   
   if (! aqi.read(&data)) {
     Serial.println("Could not read from AQI");
-    delay(500);  // try again in a bit!
-    return;
+    //delay(500);  // try again in a bit!
+    //return;
   }
     
     Serial.println("-- Default Test --");
