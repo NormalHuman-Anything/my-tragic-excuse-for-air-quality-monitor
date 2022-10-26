@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "SHTSensor.h"
 #include "Adafruit_PM25AQI.h"
 #include "s8_uart.h"
 #include "modbus_crc.h"
@@ -19,7 +20,9 @@
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3D ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 
+//PIN 5 IS SCL AND PIN 4 IS SDA REMEMBER!
 
+SHTSensor sht;
 unsigned long delayTime;
 
 PM25_AQI_Data data;
@@ -28,6 +31,8 @@ int led = 2;
 
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
 
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+ 
 SoftwareSerial pmSerial(13, 12);
 
 #define S8_RX_PIN 14         // Rx pin which the S8 Tx pin is attached to (change if it is needed)
@@ -48,6 +53,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 String GenerateMetrics() {
   digitalWrite(led, LOW);
+  sht.readSample();
   String message = "";
   message += "# HELP dht11_measuring_temperature Current sensor temperature in celsius.\n";
   message += "# TYPE dht11_measuring_temperature gauge\n";
@@ -65,6 +71,15 @@ String GenerateMetrics() {
   message += dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false);
   
   
+  message += "SHT!";
+
+  message += "SHT Temperature : ";
+  message += sht.getTemperature();
+
+  message += "SHT Humidity : ";
+  message += sht.getHumidity();
+
+
   message += "STANDARD concentration units:";
 
   message += "PM 1.0";
@@ -132,13 +147,19 @@ void setup() {
   
     Serial.begin(115200);
     dht.begin();
-    while(!Serial);  
+    while(!Serial); 
+    Wire.begin(); 
 
    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
-
+    if (sht.init()) {
+      Serial.print("init(): success\n");
+  } else {
+      Serial.print("init(): failed\n");
+  }
+  sht.setAccuracy(SHTSensor::SHT_ACCURACY_MEDIUM);
 
   S8_serial.begin(S8_BAUDRATE);
   sensor_S8 = new S8_UART(S8_serial);
@@ -191,6 +212,7 @@ void setup() {
 
 void loop() { 
     printValues();
+    WriteToDisplay();
     server.handleClient();
     delay(1000);
 }
@@ -208,4 +230,17 @@ void printValues() {
     Serial.println(" %");
 
     Serial.println();
+}
+
+void WriteToDisplay() {
+    display.clearDisplay();
+
+  display.setTextSize(1);             // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE);        // Draw white text
+  display.setCursor(0,0);             // Start at top-left corner
+  display.println("Temperature");
+  sht.readSample();
+  display.setTextSize(2);
+  display.println(sht.getTemperature());
+  display.display();
 }
