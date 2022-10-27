@@ -65,6 +65,8 @@ String GenerateMetrics() {
   message += "dht11_measuring_HeatIndex ";
   message += dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false);
   message += "\n"; 
+
+  /*
   
   message += "sht30_getTemperature ";
   message += sht.getTemperature();
@@ -126,6 +128,7 @@ String GenerateMetrics() {
   message += "senseair_s8_get_co2 ";
   message += sensor.co2 = sensor_S8->get_co2();
 
+  */
 
   return message;
 }
@@ -211,7 +214,7 @@ void setup() {
 
 void loop() { 
     printValues();
-    WriteToDisplay();
+    //WriteToDisplay();
     server.handleClient();
     delay(1000);
 }
