@@ -10,15 +10,15 @@
 #include "s8_uart.h"
 #include "modbus_crc.h"
 #include "utils.h"
-#include "DHT.h"
+//#include "DHT.h"
 
 
-#define DHTPIN 0
-#define DHTTYPE DHT11
+//#define DHTPIN 0
+//#define DHTTYPE DHT11
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_ADDRESS 0x3D ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 
 //PIN 5 IS SCL AND PIN 4 IS SDA REMEMBER!
 
@@ -27,13 +27,13 @@ unsigned long delayTime;
 
 PM25_AQI_Data data;
 
-int led = 2;
+//int led = 2;
 
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
  
-SoftwareSerial pmSerial(13, 12);
+SoftwareSerial pmSerial(12, 13);
 
 #define S8_RX_PIN 14         // Rx pin which the S8 Tx pin is attached to (change if it is needed)
 #define S8_TX_PIN 16         // Tx pin which the S8 Rx pin is attached to (change if it is needed)
@@ -46,27 +46,29 @@ const char* password = "ppap1542xd";
 S8_UART *sensor_S8;
 S8_sensor sensor;
 
+int order = 1;
+
 ESP8266WebServer server(80);
-DHT dht(DHTPIN, DHTTYPE);
+//DHT dht(DHTPIN, DHTTYPE);
 
   
 
 String GenerateMetrics() {
   sht.readSample();
   String message = "";
-  message += "dht11_measuring_temperature ";
-  message += dht.readTemperature();
-  message += "\n";
+  //message += "dht11_measuring_temperature ";
+  //message += dht.readTemperature();
+  //message += "\n";
 
-  message += "dht11_measuring_humidity ";
-  message += dht.readHumidity();
-  message += "\n";
+  //message += "dht11_measuring_humidity ";
+  //message += dht.readHumidity();
+  //message += "\n";
 
-  message += "dht11_measuring_HeatIndex ";
-  message += dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false);
-  message += "\n"; 
+  //message += "dht11_measuring_HeatIndex ";
+  //message += dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false);
+  //message += "\n"; 
 
-  /*
+  
   
   message += "sht30_getTemperature ";
   message += sht.getTemperature();
@@ -75,7 +77,7 @@ String GenerateMetrics() {
   message += "sht30_getHumidity ";
   message += sht.getHumidity();
   message += "\n";
-  */
+
   message += "data_PM10_std ";
   message += data.pm10_standard;
   message += "\n";
@@ -98,32 +100,6 @@ String GenerateMetrics() {
   message += data.pm100_env;
   message += "\n";
 
-  message += "# particles > (size) / 0.1L air : ";
-  message += "\n";
-
-  message += "data_Part03 ";
-  message += data.particles_03um;
-  message += "\n";
-
-  message += "data_Part05 ";
-  message += data.particles_05um;
-  message += "\n";
-  
-  message += "data_Part10 ";
-  message += data.particles_10um;
-  message += "\n";
-
-  message += "data_Part25 ";
-  message += data.particles_25um;
-  message += "\n";
-
-  message += "data_Part50 ";
-  message += data.particles_50um;
-  message += "\n";
-
-  message += "data_Part100 ";
-  message += data.particles_100um;
-  message += "\n";
   /*
   message += "senseair_s8_get_co2 ";
   message += sensor.co2 = sensor_S8->get_co2();
@@ -134,31 +110,63 @@ String GenerateMetrics() {
 }
 
 
-void printValues() {
-    Serial.print("Temperature = ");
-    Serial.print(dht.readTemperature());
-    Serial.println(" *C");
 
-    
-
-    Serial.print("Humidity = ");
-    Serial.print(dht.readHumidity());
-    Serial.println(" %");
-
-    Serial.println();
-}
 
 void WriteToDisplay() {
-    display.clearDisplay();
-
-  display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE);        // Draw white text
-  display.setCursor(0,0);             // Start at top-left corner
-  display.println("Temperature");
-  sht.readSample();
-  display.setTextSize(2);
-  display.println(sht.getTemperature());
-  display.display();
+  display.clearDisplay();
+    if(order == 2){
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE);        // Draw white text
+      display.setCursor(0,0);             // Start at top-left corner
+      display.println("Humidity");
+      sht.readSample();
+      display.println(sht.getHumidity());
+      display.print(" %");
+      display.display();
+      order++;
+    }else if(order == 3){
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE);        // Draw white text
+      display.setCursor(0,0);             // Start at top-left corner
+      display.println("PM1.0");
+      sht.readSample();
+      display.println(data.pm10_standard);
+      display.print(" ug/m3");
+      display.display();
+      order++;
+    }else if(order == 4){
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE);        // Draw white text
+      display.setCursor(0,0);             // Start at top-left corner
+      display.println("PM2.5");
+      sht.readSample();
+      display.println(data.pm25_standard);
+      display.print(" ug/m3");
+      display.display();
+      order++;
+    }else if(order == 5){
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE);        // Draw white text
+      display.setCursor(0,0);             // Start at top-left corner
+      display.println("PM10.0");
+      sht.readSample();
+      display.println(data.pm100_standard);
+      display.print(" ug/m3");
+      display.display();
+      order++;
+    }else{
+      order=1;
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE);        // Draw white text
+      display.setCursor(0,0);             // Start at top-left corner
+      display.println("Temp");
+      sht.readSample();
+      display.println(sht.getTemperature());
+      display.print(" C");
+      display.display();
+      order++;
+    }
+    
 }
 
 
@@ -175,15 +183,17 @@ void HandleNotFound() {
 void setup() {
   
     Serial.begin(115200);
-    dht.begin();
     //while(!Serial); 
     Wire.begin(); 
 
    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
     //for(;;); // Don't proceed, loop forever
-    
   }
+
+  display.display();
+  display.clearDisplay();
+
     if (sht.init()) {
       Serial.print("init(): success\n");
   } else {
@@ -200,8 +210,12 @@ void setup() {
       Serial.println("SenseAir S8 CO2 sensor not found!");
       //while (1) { delay(1); };
   }
-
-  
+  pmSerial.begin(9600);
+  delay(1000);
+  if (! aqi.begin_UART(&pmSerial)) { // connect to the sensor over software serial 
+    Serial.println("Could not find PM 2.5 sensor!");
+    while (1) delay(10);
+  }
   if (! aqi.read(&data)) {
     Serial.println("Could not read from AQI");
     //delay(500);  // try again in a bit!
@@ -237,12 +251,26 @@ void setup() {
 
 
     Serial.println();
+
+
+    display.display();
+  delay(2000); // Pause for 2 seconds
+
+  // Clear the buffer
+  display.clearDisplay();
+
+  // Draw a single pixel in white
+  display.drawPixel(10, 10, SSD1306_WHITE);
+
+  // Show the display buffer on the screen. You MUST call display() after
+  // drawing commands to make them visible on screen!
+  display.display();
+  delay(2000);
 }
 
 
 void loop() { 
-    printValues();
-    //WriteToDisplay();
+    WriteToDisplay();
     server.handleClient();
     delay(1000);
 }
