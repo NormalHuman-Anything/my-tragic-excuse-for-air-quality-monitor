@@ -134,6 +134,34 @@ String GenerateMetrics() {
 }
 
 
+void printValues() {
+    Serial.print("Temperature = ");
+    Serial.print(dht.readTemperature());
+    Serial.println(" *C");
+
+    
+
+    Serial.print("Humidity = ");
+    Serial.print(dht.readHumidity());
+    Serial.println(" %");
+
+    Serial.println();
+}
+
+void WriteToDisplay() {
+    display.clearDisplay();
+
+  display.setTextSize(1);             // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE);        // Draw white text
+  display.setCursor(0,0);             // Start at top-left corner
+  display.println("Temperature");
+  sht.readSample();
+  display.setTextSize(2);
+  display.println(sht.getTemperature());
+  display.display();
+}
+
+
 void HandleRoot() {
   server.send(200, "text/plain", GenerateMetrics() );
 }
@@ -217,32 +245,4 @@ void loop() {
     //WriteToDisplay();
     server.handleClient();
     delay(1000);
-}
-
-
-void printValues() {
-    Serial.print("Temperature = ");
-    Serial.print(dht.readTemperature());
-    Serial.println(" *C");
-
-    
-
-    Serial.print("Humidity = ");
-    Serial.print(dht.readHumidity());
-    Serial.println(" %");
-
-    Serial.println();
-}
-
-void WriteToDisplay() {
-    display.clearDisplay();
-
-  display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE);        // Draw white text
-  display.setCursor(0,0);             // Start at top-left corner
-  display.println("Temperature");
-  sht.readSample();
-  display.setTextSize(2);
-  display.println(sht.getTemperature());
-  display.display();
 }
