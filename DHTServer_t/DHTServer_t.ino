@@ -75,7 +75,7 @@ String GenerateMetrics() {
   message += "sht30_getHumidity ";
   message += sht.getHumidity();
   message += "\n";
-
+  */
   message += "data_PM10_std ";
   message += data.pm10_standard;
   message += "\n";
@@ -124,7 +124,7 @@ String GenerateMetrics() {
   message += "data_Part100 ";
   message += data.particles_100um;
   message += "\n";
-
+  /*
   message += "senseair_s8_get_co2 ";
   message += sensor.co2 = sensor_S8->get_co2();
 
