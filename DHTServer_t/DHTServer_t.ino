@@ -115,6 +115,7 @@ String GenerateMetrics() {
 
 void WriteToDisplay() {
   display.clearDisplay();
+  aqi.read(&data);
     if(order == 2){
       display.setTextSize(2);             // Normal 1:1 pixel scale
       display.setTextColor(SSD1306_WHITE);        // Draw white text
