@@ -55,6 +55,7 @@ ESP8266WebServer server(80);
 
 String GenerateMetrics() {
   sht.readSample();
+  aqi.read(&data);
   String message = "";
   //message += "dht11_measuring_temperature ";
   //message += dht.readTemperature();
