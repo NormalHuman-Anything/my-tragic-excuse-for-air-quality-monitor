@@ -46,7 +46,7 @@ const char* password = "ppap1542xd";
 S8_UART *sensor_S8;
 S8_sensor sensor;
 
-int time = 0;
+int tme = 0;
 int order = 1;
 
 ESP8266WebServer server(80);
@@ -273,9 +273,9 @@ void setup() {
 
 
 void loop() { 
-    if(time == 2){
+    if(tme == 2){
       WriteToDisplay();
-      time = 0;
+      tme = 0;
     }
     server.handleClient();
     time++;
