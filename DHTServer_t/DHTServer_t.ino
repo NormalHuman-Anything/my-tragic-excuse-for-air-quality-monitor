@@ -278,6 +278,6 @@ void loop() {
       tme = 0;
     }
     server.handleClient();
-    time++;
+    tme++;
     delay(1000);
 }
