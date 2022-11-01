@@ -10,11 +10,9 @@
 #include "s8_uart.h"
 #include "modbus_crc.h"
 #include "utils.h"
-//#include "DHT.h"
 
+//config start
 
-//#define DHTPIN 0
-//#define DHTTYPE DHT11
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -23,11 +21,15 @@
 //PIN 5 IS SCL AND PIN 4 IS SDA REMEMBER!
 
 SHTSensor sht;
-unsigned long delayTime;
+int order = 1;
+
+int PM10_prev = 100;
+int PM25_prev = 100;
+int PM100_prev = 100;
+
 
 PM25_AQI_Data data;
 
-//int led = 2;
 
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
 
@@ -36,7 +38,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 SoftwareSerial pmSerial(12, 13);
 
 #define S8_RX_PIN 14         // Rx pin which the S8 Tx pin is attached to (change if it is needed)
-#define S8_TX_PIN 16         // Tx pin which the S8 Rx pin is attached to (change if it is needed)
+#define S8_TX_PIN 16         // Tx pin which the S8 Rx pin is attached to (change if it is needeTd)
 
 SoftwareSerial S8_serial(S8_RX_PIN, S8_TX_PIN);
 
@@ -46,29 +48,42 @@ const char* password = "ppap1542xd";
 S8_UART *sensor_S8;
 S8_sensor sensor;
 
-int order = 1;
 
 ESP8266WebServer server(80);
-//DHT dht(DHTPIN, DHTTYPE);
 
+
+int ErrorKill(int psize) {
+  if(psize == 10){
+    if(data.pm10_standard>PM10_prev+300){
+      return(PM10_prev);
+    }else{
+      PM10_prev = data.pm10_standard;
+      return(data.pm10_standard);
+    }
+  }else if(psize == 25){
+    if(data.pm25_standard>PM25_prev+300){
+      return(PM25_prev);
+    }else{
+      PM25_prev = data.pm25_standard;
+      return(data.pm25_standard);
+    }
+  }else if(psize == 100){
+      if(data.pm100_standard>PM100_prev+300){
+      return(PM100_prev);
+    }else{
+      PM100_prev = data.pm100_standard;
+      return(data.pm100_standard);
+    }
+  }
   
+}
+
+//config end
 
 String GenerateMetrics() {
   sht.readSample();
   String message = "";
-  //message += "dht11_measuring_temperature ";
-  //message += dht.readTemperature();
-  //message += "\n";
 
-  //message += "dht11_measuring_humidity ";
-  //message += dht.readHumidity();
-  //message += "\n";
-
-  //message += "dht11_measuring_HeatIndex ";
-  //message += dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false);
-  //message += "\n"; 
-
-  
   
   message += "sht30_getTemperature ";
   message += sht.getTemperature();
@@ -79,26 +94,18 @@ String GenerateMetrics() {
   message += "\n";
 
   message += "data_PM10_std ";
-  message += data.pm10_standard;
+  message += ErrorKill(10);
+  //message += data.pm10_standard;
   message += "\n";
   message += "data_PM25_std ";
-  message += data.pm25_standard;
+  message += ErrorKill(25);
+  //message += data.pm25_standard;
   message += "\n";
   message += "data_PM100_std ";
-  message += data.pm100_standard;
+  message += ErrorKill(100);
+  //message += data.pm100_standard;
   message += "\n";
 
-  message += "data_PM10_env ";
-  message += data.pm10_env;
-  message += "\n";
-
-  message += "data_PM25_env ";
-  message += data.pm25_env;
-  message += "\n";
-
-  message += "data_PM100_env ";
-  message += data.pm100_env;
-  message += "\n";
 
   /*
   message += "senseair_s8_get_co2 ";
@@ -108,8 +115,6 @@ String GenerateMetrics() {
 
   return message;
 }
-
-
 
 
 void WriteToDisplay() {
@@ -177,7 +182,6 @@ void HandleNotFound() {
   String message = "Error\n\n";
   server.send(404, "text/html", message);
 }
-
 
 
 void setup() {
@@ -265,12 +269,16 @@ void setup() {
   // Show the display buffer on the screen. You MUST call display() after
   // drawing commands to make them visible on screen!
   display.display();
-  delay(2000);
+  delay(500);
+  PM10_prev = data.pm10_standard;
+  PM25_prev = data.pm25_standard;
+  PM100_prev = data.pm100_standard;
 }
 
 
 void loop() { 
     WriteToDisplay();
+    aqi.read(&data);
     server.handleClient();
     delay(1000);
 }
