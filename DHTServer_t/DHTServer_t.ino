@@ -21,7 +21,7 @@
 //PIN 5 IS SCL AND PIN 4 IS SDA REMEMBER!
 
 SHTSensor sht;
-int order = 1;
+
 
 int PM10_prev = 100;
 int PM25_prev = 100;
@@ -262,7 +262,7 @@ void setup() {
 
 
     display.display();
-  delay(2000); // Pause for 2 seconds
+  delay(500); // Pause for 2 seconds
 
   // Clear the buffer
   display.clearDisplay();
