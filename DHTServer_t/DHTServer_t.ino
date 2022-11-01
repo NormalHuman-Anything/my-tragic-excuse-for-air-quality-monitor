@@ -48,6 +48,8 @@ const char* password = "ppap1542xd";
 S8_UART *sensor_S8;
 S8_sensor sensor;
 
+int tme = 0;
+int order = 1;
 
 ESP8266WebServer server(80);
 
@@ -82,6 +84,7 @@ int ErrorKill(int psize) {
 
 String GenerateMetrics() {
   sht.readSample();
+  aqi.read(&data);
   String message = "";
 
   
@@ -119,6 +122,7 @@ String GenerateMetrics() {
 
 void WriteToDisplay() {
   display.clearDisplay();
+  aqi.read(&data);
     if(order == 2){
       display.setTextSize(2);             // Normal 1:1 pixel scale
       display.setTextColor(SSD1306_WHITE);        // Draw white text
@@ -277,8 +281,11 @@ void setup() {
 
 
 void loop() { 
-    WriteToDisplay();
-    aqi.read(&data);
+    if(tme == 2){
+      WriteToDisplay();
+      tme = 0;
+    }
     server.handleClient();
+    tme++;
     delay(1000);
 }
