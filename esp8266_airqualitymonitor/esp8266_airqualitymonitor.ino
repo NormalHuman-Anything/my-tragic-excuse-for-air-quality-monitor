@@ -97,24 +97,20 @@ String GenerateMetrics() {
   message += "\n";
 
   message += "data_PM10_std ";
-  message += ErrorKill(10);
-  //message += data.pm10_standard;
+  //message += ErrorKill(10);
+  message += data.pm10_standard;
   message += "\n";
   message += "data_PM25_std ";
-  message += ErrorKill(25);
-  //message += data.pm25_standard;
+  //message += ErrorKill(25);
+  message += data.pm25_standard;
   message += "\n";
   message += "data_PM100_std ";
-  message += ErrorKill(100);
-  //message += data.pm100_standard;
+  //message += ErrorKill(100);
+  message += data.pm100_standard;
   message += "\n";
 
-
-  /*
   message += "senseair_s8_get_co2 ";
   message += sensor.co2 = sensor_S8->get_co2();
-
-  */
 
   return message;
 }
@@ -161,6 +157,16 @@ void WriteToDisplay() {
       sht.readSample();
       display.println(data.pm100_standard);
       display.print(" ug/m3");
+      display.display();
+      order++;
+    }else if(order == 6){
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE);        // Draw white text
+      display.setCursor(0,0);             // Start at top-left corner
+      display.println("CO2");
+      sensor.co2 = sensor_S8->get_co2();
+      display.println(sensor.co2);
+      display.print(" ppm");
       display.display();
       order++;
     }else{
@@ -281,11 +287,11 @@ void setup() {
 
 
 void loop() { 
-    if(tme == 2){
+    //if(tme == 2){
       WriteToDisplay();
-      tme = 0;
-    }
+      //tme = 0;
+    //}
     server.handleClient();
-    tme++;
+    //tme++;
     delay(1000);
 }
