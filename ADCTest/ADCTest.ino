@@ -8,7 +8,7 @@ void setup(){
 void loop(){
     value = analogRead(ADC);
     Serial.print("ADC Value : ");
-    Serial.print(value);
+    Serial.println(value);
 
     delay(100);
 }

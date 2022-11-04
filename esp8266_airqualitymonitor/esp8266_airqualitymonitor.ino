@@ -30,6 +30,8 @@ int PM100_prev = 100;
 
 PM25_AQI_Data data;
 
+const int ADC = A0;
+int value = 0;
 
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
 
@@ -111,6 +113,11 @@ String GenerateMetrics() {
 
   message += "senseair_s8_get_co2 ";
   message += sensor.co2 = sensor_S8->get_co2();
+  message += "\n";
+
+  message += "VBAT_ADC ";
+  message += value;
+
 
   return message;
 }
@@ -291,6 +298,7 @@ void loop() {
       WriteToDisplay();
       //tme = 0;
     //}
+    value = analogRead(ADC);
     server.handleClient();
     //tme++;
     delay(1000);
