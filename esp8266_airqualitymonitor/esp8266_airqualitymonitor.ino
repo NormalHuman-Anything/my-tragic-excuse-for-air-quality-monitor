@@ -22,11 +22,11 @@
 
 SHTSensor sht;
 
-
+/*
 int PM10_prev = 100;
 int PM25_prev = 100;
 int PM100_prev = 100;
-
+*/
 
 PM25_AQI_Data data;
 
@@ -55,7 +55,7 @@ int order = 1;
 
 ESP8266WebServer server(80);
 
-
+/*
 int ErrorKill(int psize) {
   if(psize == 10){
     if(data.pm10_standard>PM10_prev+300){
@@ -79,8 +79,9 @@ int ErrorKill(int psize) {
       return(data.pm100_standard);
     }
   }
-  
 }
+*/
+
 
 //config end
 
