@@ -50,7 +50,7 @@ const char* password = "ppap1542xd";
 S8_UART *sensor_S8;
 S8_sensor sensor;
 
-int tme = 0;
+//int tme = 0;
 int order = 1;
 
 ESP8266WebServer server(80);
@@ -203,7 +203,8 @@ void HandleNotFound() {
 
 
 void setup() {
-  
+  int count = 0;
+
     Serial.begin(115200);
     //while(!Serial); 
     Wire.begin(); 
@@ -255,7 +256,12 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    count++;
+    if(count >= 20){
+      break;
+    }
   }
+
   Serial.println("");
   Serial.print("Connected to ");
   Serial.println(ssid);
@@ -271,9 +277,7 @@ void setup() {
   server.begin();
   Serial.println("HTTP server started at ip " + WiFi.localIP().toString() );
 
-
-    Serial.println();
-
+  Serial.println();
 
     display.display();
   delay(500); // Pause for 2 seconds
@@ -288,9 +292,9 @@ void setup() {
   // drawing commands to make them visible on screen!
   display.display();
   delay(500);
-  PM10_prev = data.pm10_standard;
-  PM25_prev = data.pm25_standard;
-  PM100_prev = data.pm100_standard;
+  //PM10_prev = data.pm10_standard;
+  //PM25_prev = data.pm25_standard;
+  //PM100_prev = data.pm100_standard;
 }
 
 
