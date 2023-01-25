@@ -1,5 +1,5 @@
 const int ADC = A0;
-int value = 0;
+float value = 0;
 
 void setup(){
     Serial.begin(115200);
@@ -8,7 +8,7 @@ void setup(){
 void loop(){
     value = analogRead(ADC);
     Serial.print("ADC Value : ");
-    Serial.println(value);
+    Serial.println(value/231);
 
     delay(100);
 }

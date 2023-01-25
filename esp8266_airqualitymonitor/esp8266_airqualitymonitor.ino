@@ -31,7 +31,7 @@ int PM100_prev = 100;
 PM25_AQI_Data data;
 
 const int ADC = A0;
-int value = 0;
+float value = 0;
 
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
 
@@ -175,6 +175,16 @@ void WriteToDisplay() {
       sensor.co2 = sensor_S8->get_co2();
       display.println(sensor.co2);
       display.print(" ppm");
+      display.display();
+      order++;
+    }else if(order == 7){
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE);        // Draw white text
+      display.setCursor(0,0);             // Start at top-left corner
+      display.println("VBAT");
+      sht.readSample();
+      display.println(value/231);
+      display.print(" V");
       display.display();
       order++;
     }else{
