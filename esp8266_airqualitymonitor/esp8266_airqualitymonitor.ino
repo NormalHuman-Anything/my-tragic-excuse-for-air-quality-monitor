@@ -45,7 +45,7 @@ SoftwareSerial pmSerial(12, 13);
 SoftwareSerial S8_serial(S8_RX_PIN, S8_TX_PIN);
 
 const char* ssid = "123456";
-const char* password = "ppap1542xd";
+const char* password = "ppap1542";
 
 S8_UART *sensor_S8;
 S8_sensor sensor;
