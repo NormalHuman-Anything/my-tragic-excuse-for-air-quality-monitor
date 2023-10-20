@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "c:/Users/정혁진/Documents/GitHub/my-tragic-excuse-for-air-quality-monitor",
+      "program": "c:/Users/정혁진/Documents/GitHub/my-tragic-excuse-for-air-quality-monitor/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:/Users/정혁진/AppData/Local/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gdb/3.0.4-gcc10.3-1757bed/bin/xtensa-lx106-elf-g++",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
