@@ -15,11 +15,11 @@
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 64    // OLED display height, in pixels
-#define OLED_RESET -1       // Reset pin # (or -1 if sharing Arduino reset pin)
+#define OLED_RESET -1       // Reset pin # (or -1 if sharing Arduino reset pn)
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 
 // PIN 5 IS SCL AND PIN 4 IS SDA REMEMBER!
-
++.
 SHTSensor sht;
 
 /*
@@ -86,7 +86,7 @@ int ErrorKill(int psize) {
 
 String GenerateMetrics()
 {
-  sht.readSample();
+    
   aqi.read(&data);
   String message = "";
 
@@ -212,15 +212,15 @@ void WriteToDisplay()
   }
 }
 
-void HandleRoot()
-{
-  server.send(200, "text/plain", GenerateMetrics());
-}
-void HandleNotFound()
-{
-  String message = "Error\n\n";
-  server.send(404, "text/html", message);
-}
+  void HandleRoot()
+  {
+    server.send(200, "text/plain", GenerateMetrics());
+  }
+  void HandleNotFound()
+  {
+    String message = "Error\n\n";
+    server.send(404, "text/html", message);
+  }
 
 void setup()
 {
@@ -292,13 +292,13 @@ void setup()
     }
   }
 
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  Serial.print("MAC address: ");
-  Serial.println(WiFi.macAddress());
+      Serial.println("");
+      Serial.print("Connected to ");
+      Serial.println(ssid);
+      Serial.print("IP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.print("MAC address: ");
+      Serial.println(WiFi.macAddress());
 
   server.on("/", HandleRoot);
   server.on("/metrics", HandleRoot);
