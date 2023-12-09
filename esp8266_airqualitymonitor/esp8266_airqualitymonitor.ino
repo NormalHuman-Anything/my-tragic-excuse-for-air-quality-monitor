@@ -19,7 +19,6 @@
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 
 // PIN 5 IS SCL AND PIN 4 IS SDA REMEMBER!
-+.
 SHTSensor sht;
 
 /*
@@ -247,7 +246,7 @@ void setup()
   {
     Serial.print("init(): failed\n");
   }
-  sht.setAccuracy(SHTSensor::SHT_ACCURACY_MEDIUM);
+  sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
 
   S8_serial.begin(S8_BAUDRATE);
   sensor_S8 = new S8_UART(S8_serial);
